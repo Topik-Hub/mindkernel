@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package mindkernel;
+
+service MindKernel {
+  rpc Tick(TickRequest) returns (TickResponse);
+  rpc ProposeModification(ProposeRequest) returns (ProposeResponse);
+  rpc GetStatus(StatusRequest) returns (StatusResponse);
+  rpc SubmitThought(ThoughtRequest) returns (ThoughtResponse);
+  rpc SubscribeThoughts(ThoughtQuery) returns (stream ThoughtEvent);
+  rpc Learn(LearnRequest) returns (LearnResponse);
+}
+
+message LearnRequest {
+  double time_budget_sec = 1;
+}
+
+message LearnResponse {
+  bool improvement_applied = 1;
+  string summary = 2;
+  string diff_applied = 3;
+}
+
+message TickRequest {
+  double energy_pct = 1;
+  bool user_active = 2;
+}
+
+message TickResponse {
+  int32 suggested_interval_sec = 1;
+  double energy_pct = 2;
+  double time_budget_sec = 3;
+  repeated string blocked_ideas = 4;
+  repeated string nexus_context = 5;
+}
+
+message ProposeRequest {
+  string idea_id = 1;
+  string description = 2;
+  string code_diff = 3;
+  string test_results = 4;
+  double confidence = 5;
+  string proposer_model = 6;
+  double current_metric = 7;
+  double proposed_metric = 8;
+}
+
+message ProposeResponse {
+  bool accepted = 1;
+  string reason = 2;
+  double measured_improvement = 3;
+}
+
+message StatusRequest {}
+
+message StatusResponse {
+  double energy_pct = 1;
+  double time_budget_sec = 2;
+  int32 active_ideas = 3;
+  int32 blocked_ideas_count = 4;
+  repeated BlockedIdea blocked_ideas = 5;
+  double entropy = 6;
+  int32 improvements_today = 7;
+  int64 uptime_sec = 8;
+}
+
+message BlockedIdea {
+  string idea_id = 1;
+  string description = 2;
+  string reason = 3;
+}
+
+message ThoughtRequest {
+  string thought_id = 1;
+  string content = 2;
+  string thought_type = 3;
+  double confidence = 4;
+}
+
+message ThoughtResponse {
+  bool stored = 1;
+}
+
+message ThoughtQuery {}
+
+message ThoughtEvent {
+  string thought_id = 1;
+  string content = 2;
+  string thought_type = 3;
+  double confidence = 4;
+  int64 timestamp = 5;
+}
