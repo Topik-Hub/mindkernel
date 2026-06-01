@@ -8,7 +8,7 @@
 - `macro_drives.rs`: `[curiosity, mastery, coherence, novelty]` — fixed order
 - `sandbox.rs`: In-place build with backup/restore, `cargo check` (avoids binary lock), 60s timeout, `PROTOC` env passthrough
 - `nexus_client.rs`: 130s timeout, 1 retry (backend handles retry logic)
-- Nexus backend: `D:\nexus\backend`, providers ordered nvidia-nim → openrouter (3 models) → freetheai fallback
+- Voice backend: external OpenAI-compatible `/v1/chat/completions` endpoint (configure separately)
 
 ## Key Constants (compile-time)
 
@@ -115,24 +115,16 @@ Activated by `MINDKERNEL_VOICE=1` + `rm.get_energy() > 0.3`. Sends current drive
 - **mc**: max=0.972 (near-perfect spike), 46 unique values across full 0–1 range
 - **Median initial usage proven**: new operators compete fairly, survivors accumulate usage naturally
 
-## LLM Backend Setup
+## Voice Setup
 
-Voice and improvement suggestions require an OpenAI-compatible LLM API backend. Two key components:
-
-- **`nexus_client.rs`**: 130s timeout, 1 retry — connects to a local proxy
-- **Nexus backend**: FastAPI proxy that routes to providers (e.g. nvidia-nim, openrouter) and rotates API keys
+Voice (`MINDKERNEL_VOICE=1`) sends the current drive state to an OpenAI-compatible `/v1/chat/completions` endpoint. Configure any LLM proxy that supports this API. The system sends JSON with drive values and expects a `description` field in the response.
 
 ### Quick Start
 
-1. Set up your own FastAPI proxy (or use any OpenAI-compatible endpoint)
-2. Create a `nexus.db` SQLite database with encrypted API keys (AES via Fernet)
-3. Start the backend, then:
+1. Start any OpenAI-compatible LLM proxy
+2. Set environment and run:
    ```powershell
    $env:MINDKERNEL_VOICE=1
    $env:PROTOC="C:\path\to\protoc.exe"
    cargo run --release
    ```
-
-### Configuration
-
-The system expects an OpenAI-compatible `/v1/chat/completions` endpoint. Configure providers, models, and API keys in your backend according to its documentation. Mindkernel sends drive state JSON and expects a `description` field in response.

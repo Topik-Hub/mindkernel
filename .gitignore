@@ -19,3 +19,5 @@ knowledge.json
 *.sbx_bak
 nexus.db
 __pycache__/
+
+start_nexus_*.bat

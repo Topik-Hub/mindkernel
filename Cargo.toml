@@ -2,6 +2,11 @@
 name = "mindkernel"
 version = "0.8.0"
 edition = "2024"
+description = "Self-modifying AI with homeostatic drives, emergent operator discovery, and sandboxed code evolution"
+authors = ["mindkernel"]
+license = "MIT"
+repository = "https://github.com/Topik-Hub/mindkernel"
+homepage = "https://github.com/Topik-Hub/mindkernel"
 
 [dependencies]
 tonic = "0.12"
