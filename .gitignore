@@ -17,3 +17,5 @@ knowledge.json
 *.bak
 
 *.sbx_bak
+nexus.db
+__pycache__/

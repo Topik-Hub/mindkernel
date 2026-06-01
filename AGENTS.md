@@ -120,24 +120,19 @@ Activated by `MINDKERNEL_VOICE=1` + `rm.get_energy() > 0.3`. Sends current drive
 Voice and improvement suggestions require an OpenAI-compatible LLM API backend. Two key components:
 
 - **`nexus_client.rs`**: 130s timeout, 1 retry — connects to a local proxy
-- **`D:\nexus\backend`**: FastAPI proxy that routes to providers (nvidia-nim, openrouter) and rotates API keys
+- **Nexus backend**: FastAPI proxy that routes to providers (e.g. nvidia-nim, openrouter) and rotates API keys
 
 ### Quick Start
 
-1. Clone the nexus backend: `D:\nexus\backend` (or any FastAPI proxy)
-2. Create a `nexus.db` SQLite database with encrypted API keys (AES via Fernet, key stored in `.nexus_master`)
-3. Start the backend: `uvicorn app.main:app --host 0.0.0.0 --port 8000`
-4. Set environment variable and run:
+1. Set up your own FastAPI proxy (or use any OpenAI-compatible endpoint)
+2. Create a `nexus.db` SQLite database with encrypted API keys (AES via Fernet)
+3. Start the backend, then:
    ```powershell
    $env:MINDKERNEL_VOICE=1
    $env:PROTOC="C:\path\to\protoc.exe"
    cargo run --release
    ```
 
-### Database Schema
+### Configuration
 
-The backend stores API keys in `nexus.db` — see `D:\nexus\backend\app\models\` for the full schema. Keys are encrypted at rest using `cryptography.fernet` with a master key stored in `.nexus_master`.
-
-### Provider Configuration
-
-Configure providers in `D:\nexus\backend\app\api\routes\improve.py`. The system routes to providers in priority order with automatic fallback, exponential backoff (1s/2s/4s), and key rotation on rate-limit errors.
+The system expects an OpenAI-compatible `/v1/chat/completions` endpoint. Configure providers, models, and API keys in your backend according to its documentation. Mindkernel sends drive state JSON and expects a `description` field in response.
